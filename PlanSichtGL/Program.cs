@@ -166,7 +166,7 @@ namespace openglfw
             var data = new int[width * height];
             for (int y = 0; y < height; y++)
             {
-                Buffer.BlockCopy(source, (y + yPos) * from.Stride + xPos, data, y * width * 4, width * 4);
+                Buffer.BlockCopy(source, (y + yPos) * from.Stride + (xPos * 4), data, y * width * 4, width * 4);
             }
             return new ARGBImageData(data, width, height, width * 4);
         }
@@ -174,15 +174,25 @@ namespace openglfw
         private void LoadSprites()
         {
             IRenderSprite sprite;
-            int w = 1024;
-            int h = 1024;
+            int tw = 2048;
+            int th = 2048;
+            int tx = imageData.Width / tw;
+            int ty = imageData.Height / th;
 
-            ARGBImageData d = getImageDataBlock(imageData, 800, 800, w, h);
+            for (int y=0; y<ty; y++)
+            {
+                for (int x=0; x<tx; x++)
+                {
+                    ARGBImageData d = getImageDataBlock(imageData, x * tw, y * th, tw, th);
 
-            sprite = renderer.CreateSprite("1");
-            sprite.LoadTexture(d);
-            sprite.Position = Vector3.Create(0, 0, 0);
-            sprites.Add(sprite);
+                    sprite = renderer.CreateSprite($"{x}:{y}");
+                    sprite.LoadTexture(d);
+                    sprite.CenterPoint = Vector3.Create(-1, -1, 0);
+                    sprite.Scale = Vector3.Create(0.5f, 0.5f, 0.5f);
+                    sprite.Position = Vector3.Create(x, -y, 0);
+                    sprites.Add(sprite);
+                }
+            }
         }
 
         private void Renderer_Closed(object? sender, EventArgs e)
