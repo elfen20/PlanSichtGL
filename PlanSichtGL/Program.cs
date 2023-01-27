@@ -12,7 +12,6 @@ namespace openglfw
         const string dllbasepath = @"c:\dll\glfw\";
         const string assetbasepath = @"..\..\..\..\assets\bitmap";
 
-        IBitmap32Loader bmLoader;
         Glfw3Renderer renderer;
         bool closing;
 
@@ -41,7 +40,7 @@ namespace openglfw
 
         public Program()
         {
-            bmLoader = new SkiaBitmap32Loader();
+            Bitmap32.Loader = new SkiaBitmap32Loader();
             renderer = new Glfw3Renderer();
             watch = StopWatch.StartNew();
         }
@@ -174,15 +173,17 @@ namespace openglfw
         private void LoadSprites()
         {
             IRenderSprite sprite;
-            int tw = 2048;
-            int th = 2048;
+            int tw = 1024;
+            int th = 1024;
             int tx = imageData.Width / tw;
             int ty = imageData.Height / th;
+            Console.WriteLine($"Loading {tx * ty} tiles...");
 
             for (int y=0; y<ty; y++)
             {
                 for (int x=0; x<tx; x++)
                 {
+                    Console.WriteLine($"loading tiles: [{y * tx + x} / {tx * ty}]");
                     ARGBImageData d = getImageDataBlock(imageData, x * tw, y * th, tw, th);
 
                     sprite = renderer.CreateSprite($"{x}:{y}");
